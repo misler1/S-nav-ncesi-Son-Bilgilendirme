@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sınava Hazır mısın? 🎯</title>
-<!-- Fredoka Fontu Google Fonts'tan Eklendi -->
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Google Fonts linki Türkçe karakter desteği (latin-ext) içerecek şekilde güncellendi -->
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@400;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -13,7 +13,7 @@
     --purple: #7C3AED;
     --purple-light: #EDE9FE;
     --purple-mid: #A78BFA;
-    --teal: #FFA500;
+    --teal: #0D9488;
     --teal-light: #CCFBF1;
     --amber: #D97706;
     --amber-light: #FEF3C7;
@@ -43,13 +43,13 @@
   .screen { display: none; min-height: 100vh; position: relative; }
   .screen.active { display: flex; flex-direction: column; }
 
-  /* ── LOGO / İSİM FONTU (FREDOKA VE TEAL OLDU) ── */
+  /* ── LOGO / İSİM FONTU ── */
   .brand-text {
     font-family: 'Fredoka', cursive;
     font-weight: 700;
     font-size: 1.6rem;
     color: var(--teal);
-    margin-bottom: 3.5rem; /* Giriş sayfasında daha yukarıda durması için artırıldı */
+    margin-bottom: 3.5rem;
     margin-top: 1rem;
     letter-spacing: -0.5px;
   }
@@ -630,18 +630,18 @@ function multichoiceClick(idx) {
   }
 }
 
-// ══════ ANAGRAM (KELİME VE HARF SIRASI TAMAMEN DİNAMİK YAPILDI) ══════
+// ══════ ANAGRAM ══════
 let activeSelectedChar = null;
 function buildAnagram(g) {
   const wordsWithIdx = g.words.map((w, i) => ({ word: w.toUpperCase(), idx: i }));
-  gameState.anagramWords = shuffle(wordsWithIdx); // Kelimelerin listesini her oyunda karıştırır
+  gameState.anagramWords = shuffle(wordsWithIdx);
   gameState.anagramSolved = [];
   activeSelectedChar = null; 
   
   return `<div>` +
     gameState.anagramWords.map((wordObj, wordIdx) => {
       const word = wordObj.word;
-      const chars = shuffle(word.split('')); // Kelime içindeki harfleri her oyunda karıştırır
+      const chars = shuffle(word.split(''));
       return `<div class="anagram-puzzle" id="puzzle-wrap-${wordIdx}">
         <div class="anagram-scrambled-pool" id="pool-${wordIdx}">
          ${chars.map((char, charIdx) =>
