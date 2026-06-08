@@ -17,8 +17,6 @@
     --amber: #D97706;
     --amber-light: #FEF3C7;
     --rose: #E11D48;
-
-   
     --rose-light: #FFE4E6;
     --blue: #1D4ED8;
     --blue-light: #DBEAFE;
@@ -41,8 +39,34 @@
   }
 
   /* ── SCREEN SYSTEM ── */
-  .screen { display: none; min-height: 100vh; }
+  .screen { display: none; min-height: 100vh; position: relative; }
   .screen.active { display: flex; flex-direction: column; }
+
+  /* ── LOGO YERİNE İSİM FONTU ── */
+  .brand-text {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--purple);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+  }
+
+  /* ── FİLİGRAN (WATERMARK) ── */
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-25deg);
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 2.2rem;
+    color: rgba(124, 58, 237, 0.05); /* Gözü yormayan çok hafif opaklık */
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
 
   /* ── WELCOME ── */
   #welcome {
@@ -72,7 +96,7 @@
   .game-progress-bar { height: 5px; background: var(--purple-light); }
   .game-progress-fill { height: 5px; background: var(--purple); transition: width .5s ease; }
 
-  .game-area { flex: 1; padding: 1.2rem; max-width: 600px; margin: 0 auto; width: 100%; }
+  .game-area { flex: 1; padding: 1.2rem; max-width: 600px; margin: 0 auto; width: 100%; z-index: 1; }
   .game-card { background: white; border-radius: 20px; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1rem; }
 
   .category-badge { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; font-weight: 700; padding: .3rem .8rem; border-radius: 50px; margin-bottom: .8rem; }
@@ -105,7 +129,7 @@
 
   /* ═══════════════════════════════ MINI OYUNLAR ═══════════════════════════════ */
 
-  /* 1. SIRALAMA (drag & drop benzeri — tıklayıp sırala) */
+  /* 1. SIRALAMA */
   .sort-items { display: flex; flex-direction: column; gap: .5rem; }
   .sort-item { background: var(--purple-light); border: 2px solid transparent; border-radius: 12px; padding: .75rem 1rem; cursor: pointer; font-weight: 700; font-size: .95rem; transition: all .2s; display: flex; align-items: center; gap: .6rem; user-select: none; }
   .sort-item:hover { border-color: var(--purple-mid); }
@@ -154,7 +178,7 @@
   .fill-opt.selected-wrong { background: var(--rose-light); border-color: var(--rose); color: var(--rose); animation: shake .4s; }
   .fill-opt:disabled { cursor: default; }
 
-  /* 9. ANAGRAM - DRAG & DROP */
+  /* 9. ANAGRAM */
   .anagram-puzzle { margin-bottom: 1.2rem; }
   .anagram-scrambled-pool { background: var(--amber-light); border-radius: 12px; padding: 1rem; border: 2px solid #FDE68A; margin-bottom: .6rem; display: flex; flex-wrap: wrap; gap: .4rem; min-height: 50px; }
   .anagram-char { background: white; border: 2px solid #D97706; border-radius: 8px; padding: .4rem .6rem; font-weight: 900; font-size: 1.1rem; cursor: pointer; user-select: none; transition: all .2s; color: #92400E; }
@@ -198,21 +222,15 @@
     .memory-grid { grid-template-columns: repeat(4,1fr); }
     .mem-face { font-size: 1rem; }
     .welcome-title { font-size: 1.9rem; }
+    .brand-text { font-size: 1.4rem; }
   }
-
- .logo-fixed {
-  display: none;
-}
 </style>
 </head>
 <body>
-<div class="logo-fixed">
-  <img src="logo.png" alt="Logo">
-</div>
+
+<!-- ══════════════ WELCOME ══════════════ -->
 <div id="welcome" class="screen active">
- <div class="page-logo">
-  <img src="logo.png" alt="Logo">
-</div>
+  <div class="brand-text">Psikolojik Danışman Musa İşler</div>
   <div class="welcome-emoji">🎯</div>
   <h1 class="welcome-title">LGS'ye Hazır mısın?</h1>
   <p class="welcome-sub">12 eğlenceli mini görev, 12 altın tavsiye. Her birini tamamladıkça sınava bir adım daha yaklaşıyorsun!</p>
@@ -220,7 +238,11 @@
   <button class="btn-start" onclick="startGame()">Hadi Başlayalım! 🚀</button>
 </div>
 
+<!-- ══════════════ GAME ══════════════ -->
 <div id="game-screen" class="screen">
+  <!-- Arkadaki Filigran -->
+  <div class="watermark">Psikolojik Danışman Musa İşler</div>
+  
   <div class="game-topbar">
     <button class="topbar-back" onclick="goWelcome()">← Geri</button>
     <div class="topbar-label" id="tb-label">Görev 1</div>
@@ -230,10 +252,9 @@
   <div class="game-area" id="game-area"></div>
 </div>
 
+<!-- ══════════════ FINISH ══════════════ -->
 <div id="finish" class="screen">
- <div class="page-logo">
-  <img src="logo.png" alt="Logo">
-</div>
+  <div class="brand-text">Psikolojik Danışman Musa İşler</div>
   <div class="finish-emoji">🏆</div>
   <h2 class="finish-title">Muhteşemsin!</h2>
   <p class="finish-sub">12 görevi de tamamladın. İşte sana özel LGS rehberin — bunları aklında tut!</p>
@@ -260,7 +281,7 @@ const GAMES = [
       { text: "Plansız çalışmak verimi artırır", correct: false }
     ],
     correctCount: 3,
-    tip: "✨ Pekiştirme yeni konu öğrenmekten çok daha etkilidir. Bu hafta öğrendiklerini güçlendir."
+    tip: "✨ Pekiştirme yeni konu öğrenmekten daha etkilidir. Bu hafta öğrendiklerini güçlendir."
   },
   // 2 — DOĞRU/YANLIŞ
   {
@@ -270,7 +291,7 @@ const GAMES = [
     instruction: "Aşağıdaki ifadeyi okuyun ve doğru olup olmadığına karar verin.",
     statement: "Sınav haftasında hiç görmediğim yeni konuları çalışmalıyım — ne kadar çok konu o kadar iyi!",
     answer: false,
-    tip: "✨ Son haftada yeni konu çalışmak kafa karışıklığına neden olur. Bildiklerini pekiştir, özgüvenini artır."
+    tip: "✨ Son günlerde yeni konu çalışmak yerine eksiklerini tamamla, sık hata yaptığın noktaları gözden geçir."
   },
   // 3 — EŞLEŞTİRME
   {
@@ -284,7 +305,7 @@ const GAMES = [
       ["Stres yaşadığında","Nefes egzersizi yap"],
       ["Sonuçlara","takılıp kalma, ilerle"]
     ],
-    tip: "✨ Süre yönetiminizi geliştirmek için sınav koşullarını taklit etmek en etkili yöntemdir."
+    tip: "✨ Zaman yönetimini geliştirmek için denemeleri süre tutarak gerçek sınav koşullarında çözmeye çalış."
   },
   // 4 — SLIDER
   {
@@ -295,7 +316,7 @@ const GAMES = [
     min: 4, max: 12, correct: 8, tolerance: 1,
     defaultValue: 4,
     unit: "saat",
-    tip: "✨ En az 8 saat uyku, dikkat ve hafıza için kritiktir. Geç uyumak sınav performansını doğrudan düşürür."
+    tip: "✨ En az 8 saat uyku; dikkat, öğrenme ve hafıza için kritiktir. Uyku düzenini sınav saatine göre ayarla."
   },
   // 5 — MCQ
   {
@@ -310,7 +331,7 @@ const GAMES = [
       "Arkadaşlarımı arayıp son dakika bilgi alalım"
     ],
     correct: 2,
-    tip: "✨ Sınav sabahı rutinine sadık kalmak; sakin, tok ve dinç olmak başarının yarısıdır."
+    tip: "✨ Sınav sabahında alışık olduğun rutini koru. Yeni bir şey denemekten kaçın."
   },
   // 6 — BOŞLUK DOLDUR
   {
@@ -322,7 +343,7 @@ const GAMES = [
     blank: "düzenli ve hafif",
     after: " öğünler yemek önemlidir.",
     options: ["düzenli ve hafif", "ağır ve bol", "atıştırmalık ve şekerli", "az ve düzensiz"],
-    tip: "✨ Düzenli beslenme konsantrasyonu artırır. Aşırı şeker ve ağır yemekler uyku getirir."
+    tip: "✨ Düzenli ve dengeli beslenmek zihinsel performansını destekler. Ağır ve aşırı şekerli yiyeceklerden uzak dur."
   },
   // 7 — HAFİZA OYUNU
   {
@@ -336,7 +357,7 @@ const GAMES = [
       ["💬", "Konuş & paylaş"],
       ["📖", "Günlük tut"]
     ],
-    tip: "✨ Kaygıyı yönetmek bir beceridir. Paylaşmak, hareket etmek ve nefes almak en basit araçlarıdır."
+    tip: "✨ Kaygıyı yönetmek bir beceridir. Paylaşmak, hareket etmek ve nefes almak en etkili araçlarıdır."
   },
   // 8 — DOĞRU/YANLIŞ
   {
@@ -346,7 +367,7 @@ const GAMES = [
     instruction: "Aşağıdaki ifadeyi değerlendirin.",
     statement: "Arkadaşlarımın ne kadar çalıştığını sosyal medyadan takip etmek beni motive eder ve odaklanmamı sağlar.",
     answer: false,
-    tip: "✨ Karşılaştırma gereksiz kaygı yaratır. Kendi sürecine odaklan — herkesin yolu farklıdır."
+    tip: "✨ Kendini başkalarıyla kıyaslamak gereksiz kaygıya neden olur. Kendi sürecine odaklan — herkesin yolu farklıdır."
   },
   // 9 — ANAGRAM OYUNU
   {
@@ -355,7 +376,7 @@ const GAMES = [
     title: "Günlük rutini oluştur!",
     instruction: "Günlük rutinler arasında olması gereken aktiviteler aşağıda verilmiştir. Harflerin yerini değiştirerek aktiviteleri bul:",
     words: ["Yürüyüş", "Soru Çöz", "Beslenme", "Uyku", "Analiz"],
-    tip: "✨ Günde 20–30 dakika yürüyüş stresi azaltır, odak gücünü artırır. Egzersizi rutinine ekle!"
+    tip: "✨ Günde 20–30 dakikalık yürüyüş veya hafif egzersiz hem stresi azaltır hem de zihni canlandırır."
   },
   // 10 — MCQ
   {
@@ -364,7 +385,7 @@ const GAMES = [
     title: "En iyi yaklaşım hangisi?",
     instruction: "Sınav kaygısı hissedince ne yapmalısın?",
     options: [
-      "\"Hiçbir şey öğrenemedim, başaramayacağım\" diye düşün",
+      "\"Hiçbir şey öğrenemedim, başaramayacağım\" diye চিন্তা et",
       "Kaygını güvendiğin biriyle paylaş ve derin nefes al",
       "Hemen daha çok soru çöz, duygularını yok say",
       "Arkadaşlarınla kıyasla, onlar daha iyi hazırlanmış mı bak"
@@ -391,12 +412,13 @@ const GAMES = [
     category: "🌟 Genel Hazırlık", catColor: "#1D4ED8", catBg: "#DBEAFE",
     type: "fill",
     title: "Son cümleyi tamamla!",
-    instruction: "Bu hafta sana en çok lazım olan şeyi seç!",
+    instruction: "Bu hafta sana en Microsoft lazım olan şeyi seç!",
     before: "Bu hafta yeni konu çalışmak yerine kazanımlarımı soru çözerek ",
     blank: "pekiştirmeye",
     after: " odaklanacağım.",
     options: ["pekiştirmeye", "unutmaya", "ertelemeye", "karıştırmaya"],
-    tip: "✨ Şimdi bildiklerini sağlamlaşrırma zamanı! Eksik 3 bilgi yerine sağlam 2 bilgi senin daha çok işine yarayacaktır. 🌟"
+    tip: "🌟 Şimdi bildiklerini sağlamlaşrırma zamanı! Eksik 3 bilgi yerine sağlam 2 bilgi senin daha çok işine yarayacaktır. 🌟
+     ✨ Şimdi bildiklerini sağlamlaşrırma zamanı! Eksik 3 bilgi yerine sağlam 2 bilgi senin daha çok işine yarayacaktır. 🌟"
   }
 ];
 
@@ -552,7 +574,6 @@ function multichoiceClick(idx) {
   const g = GAMES[order[current]];
   const btn = document.getElementById('mc-' + idx);
   
-  // Shuffled items arasında bu item'i bul
   const shuffledIdx = gameState.itemsOrder.find(item => item.newIdx === idx);
   const isCorrect = g.items[shuffledIdx.origIdx].correct;
   
@@ -562,14 +583,12 @@ function multichoiceClick(idx) {
       btn.classList.add('correct');
     }
   } else {
-    // Seçimi kaldır
     gameState.selected.splice(gameState.selected.indexOf(idx), 1);
     if (isCorrect) {
       btn.classList.remove('correct');
     }
   }
   
-  // Tüm doğru ifadeler seçildi mi?
   const selectedCorrect = gameState.selected.filter(i => {
     const sIdx = gameState.itemsOrder.find(item => item.newIdx === i);
     return g.items[sIdx.origIdx].correct;
@@ -617,20 +636,15 @@ function buildAnagram(g) {
 
 function anagramCharClick(el, wordId, charId, char) {
   if (gameState.answered) return;
-  
-  // Eğer daha önce basılmış ve pasifize edilmiş bir harfse tıklama alma
   if (el.style.opacity === '0.3') return;
 
-  // Diğer tüm harflerin seçim efektini temizle
   document.querySelectorAll('.anagram-char').forEach(c => c.classList.remove('selected'));
 
-  // Aynı harfe tekrar basıldıysa seçimi iptal et
   if (activeSelectedChar && activeSelectedChar.element === el) {
     activeSelectedChar = null;
     return;
   }
 
-  // Harfi seçili yap
   el.classList.add('selected');
   activeSelectedChar = {
     element: el,
@@ -646,7 +660,6 @@ function anagramSlotClick(wordId, slotId) {
   const slot = document.querySelector(`[data-word-id="${wordId}"][data-slot-id="${slotId}"]`);
   if (!slot) return;
 
-  // SENARYO 1: Slot doluysa ve üzerine tıklandıysa harfi havuza geri gönder
   if (slot.textContent) {
     const oldChar = slot.textContent;
     const oldCharId = slot.dataset.fromCharId;
@@ -665,16 +678,13 @@ function anagramSlotClick(wordId, slotId) {
     return;
   }
 
-  // SENARYO 2: Slot boşsa ve hafızada seçili bir harf varsa yerleştir
   if (activeSelectedChar) {
-    // Sadece ait olduğu kelimenin kutucuğuna yerleştirilebilir
     if (activeSelectedChar.wordId !== wordId) return;
 
     slot.textContent = activeSelectedChar.char;
     slot.classList.add('filled');
     slot.dataset.fromCharId = activeSelectedChar.charId;
 
-    // Havuzdaki harfi pasifleştir
     activeSelectedChar.element.style.opacity = '0.3';
     activeSelectedChar.element.style.pointerEvents = 'none';
     activeSelectedChar.element.classList.remove('selected');
@@ -701,8 +711,6 @@ function checkAnagramAnswer(wordId) {
   if (complete) {
     if (enteredWord === targetWord) {
       document.getElementById(`answer-${wordId}`).style.display = 'block';
-      
-      // Slotların tıklanabilirliğini kapat
       allSlots.forEach(s => s.style.pointerEvents = 'none');
 
       if (!gameState.anagramSolved.includes(wordId)) {
@@ -713,7 +721,6 @@ function checkAnagramAnswer(wordId) {
         showFeedback(g.tip, true);
       }
     } else {
-      // Kelime yanlışsa sadece o kelimenin slotlarını sıfırla ve havuzu geri aç
       allSlots.forEach(s => {
         const oldChar = s.textContent;
         const oldCharId = s.dataset.fromCharId;
@@ -998,7 +1005,7 @@ function emojiSlot(slotIdx) {
   if (gameState.emojiPlaced.every(v => v !== null)) showFeedback(g.tip);
 }
 
-function initGame(g) { /* post-render hooks if needed */ }
+function initGame(g) { }
 
 // Boot
 buildDots();
