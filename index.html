@@ -52,35 +52,34 @@
     letter-spacing: -0.5px;
   }
 
-  /* ── EN ÜST KATMAN SÜPER FİLİGRAN (SORULARIN ÜSTÜNDE GÖRÜNÜR) ── */
-  .watermark-overlay {
-    position: fixed;
+  /* ── KARTA ÖZEL ENJEKTE EDİLEN FİLİGRAN TASARIMI ── */
+  .card-watermark-container {
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 20px;
-    padding: 60px 20px;
-    justify-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
     align-items: center;
-    pointer-events: none; /* KRİTİK: En üstte olsa bile tıklamaları asla engellemez! */
+    pointer-events: none;
     user-select: none;
-    z-index: 9999; /* Beyaz kartların ve butonların da üstüne çıkartır */
+    z-index: 1; /* Kart içeriğinin (badge, soru, butonlar) hemen altında kalır */
     overflow: hidden;
+    opacity: 0.05; /* Arka planda silik, gözü yormayan ama ekran görüntüsünde net çıkacak opaklık */
   }
 
-  .watermark-text {
+  .card-watermark-text {
     font-family: 'Baloo 2', cursive;
     font-weight: 800;
-    font-size: 1.4rem;
-    color: rgba(124, 58, 237, 0.05); /* Üstte olduğu için opaklığı hafif tuttuk, okunur ama oyunu bozmaz */
+    font-size: 1.6rem;
+    color: var(--purple);
     text-align: center;
-    transform: rotate(-25deg);
+    transform: rotate(-15deg);
     white-space: pre-line;
-    line-height: 1.3;
+    line-height: 1.2;
+    width: 100%;
   }
 
   /* ── WELCOME ── */
@@ -112,7 +111,15 @@
   .game-progress-fill { height: 5px; background: var(--purple); transition: width .5s ease; }
 
   .game-area { flex: 1; padding: 1.2rem; max-width: 600px; margin: 0 auto; width: 100%; z-index: 1; }
-  .game-card { background: white; border-radius: 20px; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1rem; }
+  
+  /* KRİTİK: Filigranın kart dışına taşmaması için relative yapıldı */
+  .game-card { background: white; border-radius: 20px; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1rem; position: relative; overflow: hidden; }
+
+  /* Kart elemanlarının filigranın üstüne basabilmesi için z-index yönetimi */
+  .category-badge, .game-title, .game-instruction, .mcq-options, .sort-items, .match-grid, .tf-statement, .tf-buttons, .memory-grid, .fill-sentence, .fill-options, .slider-q, .slider-wrap, .btn-check, .feedback, .btn-next {
+    position: relative;
+    z-index: 2;
+  }
 
   .category-badge { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; font-weight: 700; padding: .3rem .8rem; border-radius: 50px; margin-bottom: .8rem; }
   .game-title { font-family:'Baloo 2',cursive; font-size: 1.3rem; font-weight: 800; color: var(--text); margin-bottom: .4rem; }
@@ -243,6 +250,7 @@
 </head>
 <body>
 
+<!-- ══════════════ WELCOME ══════════════ -->
 <div id="welcome" class="screen active">
   <div class="brand-text">Psikolojik Danışman Musa İşler</div>
   <div class="welcome-emoji">🎯</div>
@@ -252,16 +260,8 @@
   <button class="btn-start" onclick="startGame()">Hadi Başlayalım! 🚀</button>
 </div>
 
+<!-- ══════════════ GAME ══════════════ -->
 <div id="game-screen" class="screen">
-  <div class="watermark-overlay">
-    <div class="watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
-    <div class="watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
-    <div class="watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
-    <div class="watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
-    <div class="watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
-    <div class="watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
-  </div>
-  
   <div class="game-topbar">
     <button class="topbar-back" onclick="goWelcome()">← Geri</button>
     <div class="topbar-label" id="tb-label">Görev 1</div>
@@ -271,6 +271,7 @@
   <div class="game-area" id="game-area"></div>
 </div>
 
+<!-- ══════════════ FINISH ══════════════ -->
 <div id="finish" class="screen">
   <div class="brand-text">Psikolojik Danışman Musa İşler</div>
   <div class="finish-emoji">🏆</div>
@@ -510,6 +511,14 @@ function renderGame() {
   const card = document.createElement('div');
   card.className = 'game-card';
 
+  // Kartın tam içine gömülen 2 satırlı filigran yapısı (Yazı beyaz alana yedirildi)
+  const watermarkHTML = `
+    <div class="card-watermark-container">
+      <div class="card-watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
+      <div class="card-watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
+    </div>
+  `;
+
   const badge = `<div class="category-badge" style="background:${g.catBg};color:${g.catColor}">${g.category}</div>`;
   const title = `<div class="game-title">${g.title}</div>`;
   const instr = `<div class="game-instruction">${g.instruction}</div>`;
@@ -526,7 +535,8 @@ function renderGame() {
   else if (g.type === 'emoji') inner = buildEmoji(g);
   else if (g.type === 'anagram') inner = buildAnagram(g);
 
-  card.innerHTML = badge + title + instr + inner + `
+  // Filigranı kartın en başına ekliyoruz ki diğer içeriklerin arkasında kalsın
+  card.innerHTML = watermarkHTML + badge + title + instr + inner + `
     <div class="feedback success" id="fb">
       <div class="fb-title">🎉 Harika iş!</div>
       <div class="fb-tip" id="fb-tip"></div>
