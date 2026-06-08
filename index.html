@@ -335,7 +335,7 @@ const GAMES = [
     min: 4, max: 12, correct: 8, tolerance: 1,
     defaultValue: 4,
     unit: "saat",
-    tip: "✨ En az 8 saat uyku; dikkat, öğrenme ve hafıza için kritiktir. Uyku düzenini sınav saatine göre ayarla."
+    tip: "✨ En az 8 saat uyku; dikkat, öğrenme & hafıza için kritiktir. Uyku düzenini sınav saatine göre ayarla."
   },
   // 5 — MCQ
   {
@@ -431,7 +431,7 @@ const GAMES = [
     category: "🌟 Genel Hazırlık", catColor: "#1D4ED8", catBg: "#DBEAFE",
     type: "fill",
     title: "Son cümleyi tamamla!",
-    instruction: "Bu hafta sana en Microsoft lazım olan şeyi seç!",
+    instruction: "Bu hafta sana ne lazım olduğunu seç!",
     before: "Bu hafta yeni konu çalışmak yerine kazanımlarımı soru çözerek ",
     blank: "pekiştirmeye",
     after: " odaklanacağım.",
@@ -440,12 +440,14 @@ const GAMES = [
   }
 ];
 
-// Rastgele karıştır
+// Fisher-Yates Karıştırma Algoritması (Kusursuz Karıştırma)
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [a[j], a[i]] = [a[j], a[i]];
+    const temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
   }
   return a;
 }
@@ -474,14 +476,18 @@ function updateDots() {
 }
 
 function startGame() {
-  order = shuffle([...Array(12).keys()]);
+  const indexes = [];
+  for (let i = 0; i < 12; i++) indexes.push(i);
+  order = shuffle(indexes);
   current = 0;
   showScreen('game-screen');
   renderGame();
 }
 
 function restartGame() {
-  order = shuffle([...Array(12).keys()]);
+  const indexes = [];
+  for (let i = 0; i < 12; i++) indexes.push(i);
+  order = shuffle(indexes);
   current = 0;
   showScreen('welcome');
   updateDots();
@@ -511,7 +517,6 @@ function renderGame() {
   const card = document.createElement('div');
   card.className = 'game-card';
 
-  // Kartın tam içine gömülen 2 satırlı filigran yapısı (Yazı beyaz alana yedirildi)
   const watermarkHTML = `
     <div class="card-watermark-container">
       <div class="card-watermark-text">PSİKOLOJİK DANIŞMAN&#10;MUSA İŞLER</div>
@@ -535,7 +540,6 @@ function renderGame() {
   else if (g.type === 'emoji') inner = buildEmoji(g);
   else if (g.type === 'anagram') inner = buildAnagram(g);
 
-  // Filigranı kartın en başına ekliyoruz ki diğer içeriklerin arkasında kalsın
   card.innerHTML = watermarkHTML + badge + title + instr + inner + `
     <div class="feedback success" id="fb">
       <div class="fb-title">🎉 Harika iş!</div>
@@ -590,7 +594,8 @@ function showFinish() {
 // ══════ MULTICHOICE (DOĞRU İFADELERE TIKLA) ══════
 function buildMultiChoice(g) {
   gameState.selected = [];
-  const shuffledItems = shuffle(g.items.map((item, i) => ({ ...item, origIdx: i })));
+  const itemsWithIdx = g.items.map((item, i) => ({ ...item, origIdx: i }));
+  const shuffledItems = shuffle(itemsWithIdx);
   gameState.itemsOrder = shuffledItems.map((item, i) => ({ origIdx: item.origIdx, newIdx: i }));
   return `<div class="mcq-options">` +
     shuffledItems.map((item, i) => `<button class="mcq-opt" id="mc-${i}" onclick="multichoiceClick(${i})">${item.text}</button>`).join('') +
@@ -627,11 +632,11 @@ function multichoiceClick(idx) {
   }
 }
 
-// ══════ ANAGRAM - TEK TIKLA / DOKUN SEÇ-YERLEŞTİR SİSTEMİ ══════
+// ══════ ANAGRAM ══════
 let activeSelectedChar = null;
-
 function buildAnagram(g) {
-  gameState.anagramWords = shuffle(g.words.map((w, i) => ({ word: w.toUpperCase(), idx: i })));
+  const wordsWithIdx = g.words.map((w, i) => ({ word: w.toUpperCase(), idx: i }));
+  gameState.anagramWords = shuffle(wordsWithIdx);
   gameState.anagramSolved = [];
   activeSelectedChar = null; 
   
@@ -768,7 +773,8 @@ function checkAnagramAnswer(wordId) {
 
 // ══════ SORT ══════
 function buildSort(g) {
-  const shuffled = shuffle(g.items.map((text, i) => ({ text, origIdx: i })));
+  const itemsWithIdx = g.items.map((text, i) => ({ text, origIdx: i }));
+  const shuffled = shuffle(itemsWithIdx);
   gameState.sortOrder = shuffled;
   gameState.placed = [];
   return `<div class="sort-items" id="sort-list">` +
@@ -907,27 +913,43 @@ function sliderCheck() {
   showFeedback(g.tip, isCorrect);
 }
 
-// ══════ MCQ ══════
+// ══════ MCQ (ÇOKTAN SEÇMELİ) ══════
 function buildMCQ(g) {
+  const optionsWithIdx = g.options.map((o, i) => ({ text: o, origIdx: i }));
+  const shuffledOptions = shuffle(optionsWithIdx);
+  gameState.mcqOrder = shuffledOptions;
+  
   return `<div class="mcq-options">` +
-    g.options.map((o, i) => `<button class="mcq-opt" id="mq-${i}" onclick="mcqClick(${i})">${o}</button>`).join('') +
+    shuffledOptions.map((o, i) => `<button class="mcq-opt" id="mq-${i}" onclick="mcqClick(${i})">${o.text}</button>`).join('') +
     `</div>`;
 }
 function mcqClick(idx) {
   if (gameState.answered) return;
   const g = GAMES[order[current]];
   document.querySelectorAll('.mcq-opt').forEach(b => b.disabled = true);
-  const isCorrect = idx === g.correct;
-  document.getElementById('mq-' + g.correct).classList.add('correct');
-  if (!isCorrect) document.getElementById('mq-' + idx).classList.add('wrong');
+  
+  const selectedOpt = gameState.mcqOrder[idx];
+  const isCorrect = selectedOpt.origIdx === g.correct;
+  
+  gameState.mcqOrder.forEach((o, i) => {
+    if (o.origIdx === g.correct) {
+      document.getElementById('mq-' + i).classList.add('correct');
+    }
+  });
+  
+  if (!isCorrect) {
+    document.getElementById('mq-' + idx).classList.add('wrong');
+  }
+  
   showFeedback(g.tip, isCorrect);
 }
 
 // ══════ FILL ══════
 function buildFill(g) {
+  const shuffledOpts = shuffle(g.options);
   return `<div class="fill-sentence">${g.before}<span class="fill-blank" id="fill-blank">___</span>${g.after}</div>
     <div class="fill-options">` +
-    shuffle(g.options).map(o => `<button class="fill-opt" onclick="fillClick(this,'${o.replace(/'/g,"\\'")}','${g.blank.replace(/'/g,"\\'")}','${g.tip.replace(/'/g,"\\'")}')">${o}</button>`).join('') +
+    shuffledOpts.map(o => `<button class="fill-opt" onclick="fillClick(this,'${o.replace(/'/g,"\\'")}','${g.blank.replace(/'/g,"\\'")}','${g.tip.replace(/'/g,"\\'")}')">${o}</button>`).join('') +
     `</div>`;
 }
 function fillClick(btn, val, correct, tip) {
@@ -952,7 +974,8 @@ function fillClick(btn, val, correct, tip) {
 
 // ══════ MEMORY ══════
 function buildMemory(g) {
-  const cards = shuffle([...g.pairs.map((p,i) => ({id:i,face:p[0],type:'emoji'})), ...g.pairs.map((p,i) => ({id:i,face:p[1],type:'text'}))]);
+  const rawCards = [...g.pairs.map((p,i) => ({id:i,face:p[0],type:'emoji'})), ...g.pairs.map((p,i) => ({id:i,face:p[1],type:'text'}))];
+  const cards = shuffle(rawCards);
   gameState.memFlipped = [];
   gameState.memMatched = 0;
   gameState.memLocked = false;
@@ -997,9 +1020,11 @@ function memClick(idx) {
 function buildEmoji(g) {
   gameState.emojiPlaced = new Array(g.emojis.length).fill(null);
   gameState.emojiSel = null;
+  const rawChips = g.emojis.map((e,i) => ({e,i}));
+  const shuffledChips = shuffle(rawChips);
   return `<div class="emoji-task">Sabahtan akşama doğru sıraya diz:</div>
     <div class="emoji-pool" id="epool">
-      ${shuffle(g.emojis.map((e,i) => ({e,i}))).map(obj =>
+      ${shuffledChips.map(obj =>
         `<div class="emoji-chip" id="ec-${obj.i}" onclick="emojiPick(${obj.i})">${obj.e} ${g.labels[obj.i]}</div>`
       ).join('')}
     </div>
