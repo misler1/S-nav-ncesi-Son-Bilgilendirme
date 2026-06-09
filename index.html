@@ -33,6 +33,7 @@
     --muted: #6B7280;
     --border: #E5E7EB;
     --shadow: 0 4px 20px rgba(124,58,237,0.10);
+    --brand-orange: #EA580C; /* İstediğin şık ve canlı turuncu tonu buraya eklendi */
   }
 
   body {
@@ -48,11 +49,11 @@
   .screen { display: none; min-height: 100vh; position: relative; }
   .screen.active { display: flex; flex-direction: column; }
 
-  /* ── LOGO / İSİM FONTU (YUKARIDA VE TEAL RENK) ── */
+  /* ── LOGO / İSİM FONTU (YUKARIDA VE TURUNCU RENK) ── */
   .brand-text {
     font-weight: 800;
     font-size: 1.7rem;
-    color: var(--teal);
+    color: var(--brand-orange); /* Renginiz turuncu olarak güncellendi */
     margin-bottom: 3.5rem;
     margin-top: 1.5rem;
     letter-spacing: -0.5px;
@@ -252,7 +253,6 @@
 </head>
 <body>
 
-<!-- ══════════════ WELCOME ══════════════ -->
 <div id="welcome" class="screen active">
   <div class="brand-text">Psikolojik Danışman Musa İşler</div>
   <div class="welcome-emoji">🎯</div>
@@ -262,7 +262,6 @@
   <button class="btn-start" onclick="startGame()">Hadi Başlayalım! 🚀</button>
 </div>
 
-<!-- ══════════════ GAME ══════════════ -->
 <div id="game-screen" class="screen">
   <div class="game-topbar">
     <button class="topbar-back" onclick="goWelcome()">← Geri</button>
@@ -273,7 +272,6 @@
   <div class="game-area" id="game-area"></div>
 </div>
 
-<!-- ══════════════ FINISH ══════════════ -->
 <div id="finish" class="screen">
   <div class="brand-text">Psikolojik Danışman Musa İşler</div>
   <div class="finish-emoji">🏆</div>
